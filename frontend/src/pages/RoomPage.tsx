@@ -43,7 +43,8 @@ export default function RoomPage() {
     return () => {
       s.off('room:state', onState);
       s.off('room:chat', onChat);
-      s.emit('room:leave');
+      // 注意：不在这里 emit room:leave（StrictMode 双挂载会错误删除空房间）
+      // 离开房间由“返回大厅”按钮、连接断开或关闭页面触发
     };
   }, [roomId, navigate]);
 
@@ -73,7 +74,10 @@ export default function RoomPage() {
       <header className="border-b border-line">
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
           <button
-            onClick={() => navigate('/lobby')}
+            onClick={() => {
+              getSocket().emit('room:leave');
+              navigate('/lobby');
+            }}
             className="flex items-center gap-1.5 text-sm text-ink-soft hover:text-ink"
           >
             <ArrowLeft size={14} />
