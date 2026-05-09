@@ -49,7 +49,12 @@ export interface ChatMessage {
   timestamp: number;
 }
 
+/**
+ * 一段笔画数据。可能是完整笔画的一段增量（同一 strokeId 多次发送）。
+ * 坐标使用归一化 0~1 区间，便于不同分辨率画布间转换。
+ */
 export interface DrawStroke {
+  strokeId: string;
   points: Array<{ x: number; y: number }>;
   color: string;
   size: number;

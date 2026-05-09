@@ -111,22 +111,28 @@ export function registerSocketHandlers(io: IO, socket: IOSocket) {
   });
 
   // 画布笔画广播
+  // MVP：waiting 状态下任何人可画（用于测试 / 热身），drawing 状态下仅画者可画
+  const canDraw = (room: Room) => {
+    if (room.status === 'waiting') return true;
+    if (room.status === 'drawing') return room.currentDrawerId === socket.data.playerId;
+    return false;
+  };
+
   socket.on('draw:stroke', (stroke) => {
     const room = currentRoom(socket);
-    if (!room) return;
-    if (room.currentDrawerId !== socket.data.playerId) return; // 仅画者可发
+    if (!room || !canDraw(room)) return;
     socket.to(room.id).emit('draw:stroke', stroke);
   });
 
   socket.on('draw:clear', () => {
     const room = currentRoom(socket);
-    if (!room || room.currentDrawerId !== socket.data.playerId) return;
+    if (!room || !canDraw(room)) return;
     socket.to(room.id).emit('draw:clear');
   });
 
   socket.on('draw:undo', () => {
     const room = currentRoom(socket);
-    if (!room || room.currentDrawerId !== socket.data.playerId) return;
+    if (!room || !canDraw(room)) return;
     socket.to(room.id).emit('draw:undo');
   });
 

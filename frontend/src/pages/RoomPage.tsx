@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Play } from 'lucide-react';
 import type { ChatMessage, RoomState } from '@shared/events';
 import { Avatar } from '@/components/Avatar';
+import { DrawCanvas, type DrawCanvasHandle } from '@/components/DrawCanvas';
+import { DrawToolbar } from '@/components/DrawToolbar';
 import { getSocket } from '@/socket/client';
 import { useUserStore } from '@/store/user';
 
@@ -14,6 +16,12 @@ export default function RoomPage() {
   const [state, setState] = useState<RoomState | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
+
+  // 画布工具状态
+  const canvasRef = useRef<DrawCanvasHandle>(null);
+  const [color, setColor] = useState('#171717');
+  const [size, setSize] = useState(6);
+  const [tool, setTool] = useState<'pen' | 'eraser'>('pen');
 
   useEffect(() => {
     const s = getSocket();
@@ -46,7 +54,9 @@ export default function RoomPage() {
     setInput('');
   };
 
-  const startGame = () => getSocket().emit('room:start');
+  const startGame = () => {
+    alert('回合状态机开发中，当前可在等待室自由绘画测试同步效果');
+  };
 
   if (!state) {
     return (
@@ -103,11 +113,26 @@ export default function RoomPage() {
           ))}
         </aside>
 
-        {/* 画布区域（占位） */}
+        {/* 画布区域 */}
         <section className="col-span-6 space-y-3">
-          <div className="card aspect-[4/3] flex items-center justify-center text-ink-mute text-sm">
-            画布区域（待实现）
-          </div>
+          <DrawCanvas
+            ref={canvasRef}
+            drawable={state.status === 'waiting' || state.currentDrawerId === me.playerId}
+            color={color}
+            size={size}
+            tool={tool}
+          />
+          <DrawToolbar
+            disabled={state.status !== 'waiting' && state.currentDrawerId !== me.playerId}
+            color={color}
+            size={size}
+            tool={tool}
+            onColorChange={setColor}
+            onSizeChange={setSize}
+            onToolChange={setTool}
+            onUndo={() => canvasRef.current?.undo()}
+            onClear={() => canvasRef.current?.clear()}
+          />
           {state.status === 'waiting' && isHost && (
             <button onClick={startGame} className="btn-accent w-full h-10">
               <Play size={14} />
@@ -115,7 +140,9 @@ export default function RoomPage() {
             </button>
           )}
           {state.status === 'waiting' && !isHost && (
-            <div className="text-center text-xs text-ink-mute">等待房主开始游戏…</div>
+            <div className="text-center text-xs text-ink-mute">
+              等待房主开始游戏 · 当前可自由绘画测试
+            </div>
           )}
         </section>
 
