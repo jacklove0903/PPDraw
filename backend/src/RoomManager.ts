@@ -14,6 +14,8 @@ export interface RoomEngine {
   start(): { ok: boolean; error?: string };
   chooseWord(playerId: string, word: string): void;
   receiveGuess(playerId: string, text: string): { broadcastAs: 'chat' | 'correct' | 'silent' };
+  /** 玩家点击"下一回合"按钮，跳过 roundEnd 等待 */
+  requestAdvance(): void;
   handlePlayerLeave(playerId: string): void;
   cleanup(): void;
 }

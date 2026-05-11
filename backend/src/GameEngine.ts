@@ -227,13 +227,26 @@ export class GameEngine implements RoomEngine {
       delta: p.score - (this.roundStartScores.get(p.id) ?? p.score),
     }));
 
-    this.io.to(this.room.id).emit('game:roundEnd', { word, scores });
+    const totalTurns = this.drawerQueue.length * this.room.config.rounds;
+    const isLast = this.turnIndex >= totalTurns - 1;
+
+    this.io.to(this.room.id).emit('game:roundEnd', { word, scores, isLast });
     broadcastRoomState(this.io, this.room);
 
-    this.timer = setTimeout(() => {
-      this.turnIndex++;
-      this.startTurn();
-    }, ROUND_END_SECONDS * 1000);
+    this.timer = setTimeout(() => this.advance(), ROUND_END_SECONDS * 1000);
+  }
+
+  /** 从 roundEnd 推进到下一阶段（下一回合或 endGame） */
+  private advance() {
+    this.clearTimer();
+    this.turnIndex++;
+    this.startTurn();
+  }
+
+  /** 外部调用：玩家点击跳过 roundEnd 等待 */
+  requestAdvance(): void {
+    if (this.room.status !== 'roundEnd') return;
+    this.advance();
   }
 
   /** 游戏结束 */

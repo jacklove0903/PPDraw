@@ -6,14 +6,25 @@ interface RoundEndModalProps {
   players: Player[];
   scores: Array<{ playerId: string; delta: number }>;
   phaseEndsAt?: number;
+  isLast: boolean;
+  onAdvance: () => void;
 }
 
-export function RoundEndModal({ word, players, scores, phaseEndsAt }: RoundEndModalProps) {
+export function RoundEndModal({
+  word,
+  players,
+  scores,
+  phaseEndsAt,
+  isLast,
+  onAdvance,
+}: RoundEndModalProps) {
   const remaining = useCountdown(phaseEndsAt);
   const deltaById = new Map(scores.map((s) => [s.playerId, s.delta]));
 
   // 按本轮得分降序
   const ranked = [...players].sort((a, b) => (deltaById.get(b.id) ?? 0) - (deltaById.get(a.id) ?? 0));
+
+  const buttonText = isLast ? '查看最终结算' : '下一回合';
 
   return (
     <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/20 backdrop-blur-[2px] p-4">
@@ -37,9 +48,12 @@ export function RoundEndModal({ word, players, scores, phaseEndsAt }: RoundEndMo
           })}
         </div>
 
-        <div className="mt-5 text-center text-xs text-ink-mute tabular-nums">
-          下一回合 {remaining}s
-        </div>
+        <button
+          onClick={onAdvance}
+          className="btn-accent w-full h-10 mt-5 tabular-nums"
+        >
+          {buttonText} ({remaining}s)
+        </button>
       </div>
     </div>
   );

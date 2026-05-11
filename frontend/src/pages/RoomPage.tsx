@@ -17,6 +17,7 @@ type Difficulty = 'easy' | 'medium' | 'hard';
 interface RoundResult {
   word: string;
   scores: Array<{ playerId: string; delta: number }>;
+  isLast: boolean;
 }
 
 export default function RoomPage() {
@@ -228,6 +229,8 @@ export default function RoomPage() {
                 players={state.players}
                 scores={roundResult.scores}
                 phaseEndsAt={state.phaseEndsAt}
+                isLast={roundResult.isLast}
+                onAdvance={() => getSocket().emit('game:advance')}
               />
             )}
 

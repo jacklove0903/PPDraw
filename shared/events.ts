@@ -71,6 +71,8 @@ export interface ClientToServerEvents {
   'room:leave': () => void;
   'room:start': () => void;
   'game:chooseWord': (word: string) => void;
+  /** 跳过当前 roundEnd 等待，立即进入下一阶段（下一回合或最终结算） */
+  'game:advance': () => void;
   'game:guess': (text: string) => void;
   'draw:stroke': (stroke: DrawStroke) => void;
   'draw:clear': () => void;
@@ -82,7 +84,12 @@ export interface ServerToClientEvents {
   'room:state': (state: RoomState) => void;
   'room:chat': (message: ChatMessage) => void;
   'game:wordChoices': (words: Array<{ word: string; difficulty: 'easy' | 'medium' | 'hard' }>) => void;
-  'game:roundEnd': (payload: { word: string; scores: Array<{ playerId: string; delta: number }> }) => void;
+  'game:roundEnd': (payload: {
+    word: string;
+    scores: Array<{ playerId: string; delta: number }>;
+    /** 本回合是否是整局的最后一个回合 */
+    isLast: boolean;
+  }) => void;
   'game:gameEnd': (payload: { ranking: Player[] }) => void;
   'draw:stroke': (stroke: DrawStroke) => void;
   'draw:clear': () => void;

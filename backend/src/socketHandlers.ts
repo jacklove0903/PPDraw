@@ -115,6 +115,13 @@ export function registerSocketHandlers(io: IO, socket: IOSocket) {
     room.engine.chooseWord(socket.data.playerId!, word);
   });
 
+  // 跳过 roundEnd 等待
+  socket.on('game:advance', () => {
+    const room = currentRoom(socket);
+    if (!room || !room.engine) return;
+    room.engine.requestAdvance();
+  });
+
   // 画布笔画广播
   // MVP：waiting 状态下任何人可画（用于测试 / 热身），drawing 状态下仅画者可画
   const canDraw = (room: Room) => {
