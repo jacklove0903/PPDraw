@@ -35,9 +35,10 @@ export interface RoomState {
   status: 'waiting' | 'choosing' | 'drawing' | 'roundEnd' | 'gameEnd';
   currentRound: number;
   currentDrawerId?: string;
-  word?: string;        // 仅画者可见
-  wordHint?: string;    // 公开的字数提示，如 "_ _ _ _"
-  remainingSeconds?: number;
+  word?: string;          // 仅画者可见
+  wordHint?: string;      // 公开的字数提示，如 "_ _ _ _"
+  /** 当前阶段结束的 Unix 毫秒时间戳，客户端用于显示倒计时 */
+  phaseEndsAt?: number;
 }
 
 export interface ChatMessage {
@@ -81,7 +82,6 @@ export interface ServerToClientEvents {
   'room:state': (state: RoomState) => void;
   'room:chat': (message: ChatMessage) => void;
   'game:wordChoices': (words: Array<{ word: string; difficulty: 'easy' | 'medium' | 'hard' }>) => void;
-  'game:roundStart': (payload: { drawerId: string; round: number }) => void;
   'game:roundEnd': (payload: { word: string; scores: Array<{ playerId: string; delta: number }> }) => void;
   'game:gameEnd': (payload: { ranking: Player[] }) => void;
   'draw:stroke': (stroke: DrawStroke) => void;

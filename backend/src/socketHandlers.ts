@@ -4,7 +4,8 @@ import type {
   ServerToClientEvents,
   Player,
 } from '../../shared/events.js';
-import { roomManager, type Room } from './RoomManager.js';
+import { broadcastRoomState, roomManager, type Room } from './RoomManager.js';
+import { GameEngine } from './GameEngine.js';
 
 interface SocketData {
   playerId?: string;
@@ -16,11 +17,10 @@ interface SocketData {
 type IO = Server<ClientToServerEvents, ServerToClientEvents, {}, SocketData>;
 type IOSocket = Socket<ClientToServerEvents, ServerToClientEvents, {}, SocketData>;
 
-/** 广播房间最新状态给所有成员（每个人收到的视角不同） */
-function broadcastRoomState(io: IO, room: Room) {
-  for (const [playerId, sid] of room.socketByPlayerId) {
-    io.to(sid).emit('room:state', roomManager.toState(room, playerId));
-  }
+/** 懒加载获取（或创建）房间的游戏引擎 */
+function getEngine(io: IO, room: Room): GameEngine {
+  if (!room.engine) room.engine = new GameEngine(io, room);
+  return room.engine as GameEngine;
 }
 
 export function registerSocketHandlers(io: IO, socket: IOSocket) {
@@ -95,19 +95,24 @@ export function registerSocketHandlers(io: IO, socket: IOSocket) {
     leaveCurrentRoom(io, socket);
   });
 
-  // 开始游戏（仅房主，MVP 占位）
+  // 开始游戏（仅房主）
   socket.on('room:start', () => {
     const room = currentRoom(socket);
     if (!room) return;
-    if (room.hostId !== socket.data.playerId) return;
-    if (room.players.size < 2) {
-      socket.emit('error:message', '至少需要 2 名玩家才能开始');
+    if (room.hostId !== socket.data.playerId) {
+      socket.emit('error:message', '只有房主可以开始游戏');
       return;
     }
-    // TODO: 进入选词阶段，实现完整状态机
-    room.status = 'choosing';
-    room.currentRound = 1;
-    broadcastRoomState(io, room);
+    const engine = getEngine(io, room);
+    const res = engine.start();
+    if (!res.ok) socket.emit('error:message', res.error ?? '无法开始');
+  });
+
+  // 画者选词
+  socket.on('game:chooseWord', (word: string) => {
+    const room = currentRoom(socket);
+    if (!room || !room.engine) return;
+    room.engine.chooseWord(socket.data.playerId!, word);
   });
 
   // 画布笔画广播
@@ -136,7 +141,7 @@ export function registerSocketHandlers(io: IO, socket: IOSocket) {
     socket.to(room.id).emit('draw:undo');
   });
 
-  // 聊天 / 猜词
+  // 聊天 / 猜词（由引擎判定是否广播，返回消息类型）
   socket.on('game:guess', (text) => {
     const room = currentRoom(socket);
     if (!room) return;
@@ -147,17 +152,15 @@ export function registerSocketHandlers(io: IO, socket: IOSocket) {
     const trimmed = text.trim();
     if (!trimmed) return;
 
-    // TODO: 答对判定逻辑（含同义词、繁简体）
-    const isCorrect =
-      room.status === 'drawing' &&
-      room.word &&
-      trimmed === room.word &&
-      playerId !== room.currentDrawerId;
+    const decision = room.engine
+      ? room.engine.receiveGuess(playerId, trimmed)
+      : ({ broadcastAs: 'chat' as const });
 
-    if (isCorrect) {
-      player.hasGuessed = true;
+    if (decision.broadcastAs === 'silent') return;
+
+    if (decision.broadcastAs === 'correct') {
       io.to(room.id).emit('room:chat', {
-        id: `${Date.now()}`,
+        id: `${Date.now()}-${playerId}`,
         playerId,
         playerName: player.name,
         text: `${player.name} 猜对了！`,
@@ -166,7 +169,7 @@ export function registerSocketHandlers(io: IO, socket: IOSocket) {
       });
     } else {
       io.to(room.id).emit('room:chat', {
-        id: `${Date.now()}`,
+        id: `${Date.now()}-${playerId}`,
         playerId,
         playerName: player.name,
         text: trimmed,
@@ -202,14 +205,18 @@ function leaveCurrentRoom(io: IO, socket: IOSocket) {
         next.isHost = true;
         room.hostId = next.id;
       } else {
+        room.engine?.cleanup();
         roomManager.remove(room.id);
         return;
       }
     }
+    // 通知引擎玩家离开（画者离开、不足 2 人等会被处理）
+    room.engine?.handlePlayerLeave(playerId);
   }
   socket.leave(room.id);
   socket.data.roomId = undefined;
   if (room.players.size === 0) {
+    room.engine?.cleanup();
     roomManager.remove(room.id);
     return;
   }
