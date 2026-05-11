@@ -60,12 +60,17 @@ export default function RoomPage() {
     const onRoundEnd = (payload: RoundResult) => setRoundResult(payload);
     const onGameEnd = (payload: { ranking: Player[] }) => setFinalRanking(payload.ranking);
     const onError = (text: string) => alert(text);
+    const onDissolved = () => {
+      alert('房间已被房主解散');
+      navigate('/lobby');
+    };
 
     s.on('room:state', onState);
     s.on('room:chat', onChat);
     s.on('game:wordChoices', onWordChoices);
     s.on('game:roundEnd', onRoundEnd);
     s.on('game:gameEnd', onGameEnd);
+    s.on('room:dissolved', onDissolved);
     s.on('error:message', onError);
 
     s.emit('room:join', { roomId }, (res) => {
