@@ -48,6 +48,8 @@ export interface RoomSummary {
   maxPlayers: number;
   hasPassword: boolean;
   status: 'waiting' | 'playing';
+  /** 创建者 playerId，用于前端判断是否是“我的房间”（跳过密码提示） */
+  creatorId?: string;
 }
 
 export interface RoomConfig {
@@ -102,6 +104,8 @@ export interface ClientToServerEvents {
   /** 快速匹配：寻找任一无密码、等待中、未满的房间；若无则自动创建一个 */
   'room:quickMatch': (cb: (res: { ok: boolean; roomId?: string; error?: string }) => void) => void;
   'room:leave': () => void;
+  /** 解散房间（仅房主），锁定朿器后踢出所有玩家 */
+  'room:dissolve': () => void;
   'room:start': () => void;
   'game:chooseWord': (word: string) => void;
   /** 跳过当前 roundEnd 等待，立即进入下一阶段（下一回合或最终结算） */
@@ -116,6 +120,8 @@ export interface ClientToServerEvents {
 export interface ServerToClientEvents {
   'room:state': (state: RoomState) => void;
   'room:chat': (message: ChatMessage) => void;
+  /** 房主解散房间，所有客户端返回大厅 */
+  'room:dissolved': () => void;
   'game:wordChoices': (words: Array<{ word: string; difficulty: 'easy' | 'medium' | 'hard' }>) => void;
   'game:roundEnd': (payload: {
     word: string;

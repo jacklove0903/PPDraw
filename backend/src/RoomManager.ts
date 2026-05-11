@@ -35,6 +35,8 @@ export interface Room {
   wordHint?: string;
   phaseEndsAt?: number;
   hostId?: string;
+  /** 创建者 playerId（不会随房主转移改变） */
+  creatorId?: string;
   /** 用于断线重连的 socket 映射 */
   socketByPlayerId: Map<string, string>;
   /** 游戏引擎，懒加载 */
@@ -87,6 +89,7 @@ export class RoomManager {
       maxPlayers: r.config.maxPlayers,
       hasPassword: !!r.password,
       status: r.status === 'waiting' ? 'waiting' : 'playing',
+      creatorId: r.creatorId,
     }));
   }
 

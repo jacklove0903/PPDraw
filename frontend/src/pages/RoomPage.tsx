@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Clock, Play } from 'lucide-react';
+import { ArrowLeft, Clock, Play, Trash2 } from 'lucide-react';
 import type { ChatMessage, Player, RoomState } from '@shared/events';
 import { Avatar } from '@/components/Avatar';
 import { DrawCanvas, type DrawCanvasHandle } from '@/components/DrawCanvas';
@@ -81,6 +81,7 @@ export default function RoomPage() {
       s.off('game:wordChoices', onWordChoices);
       s.off('game:roundEnd', onRoundEnd);
       s.off('game:gameEnd', onGameEnd);
+      s.off('room:dissolved', onDissolved);
       s.off('error:message', onError);
     };
   }, [roomId, navigate]);
@@ -112,6 +113,12 @@ export default function RoomPage() {
   const handlePlayAgain = () => {
     if (!isHost) return;
     getSocket().emit('room:start');
+  };
+
+  const handleDissolve = () => {
+    if (!isHost) return;
+    if (!confirm('确认解散房间？所有玩家将返回大厅。')) return;
+    getSocket().emit('room:dissolve');
   };
 
   if (!state) {
@@ -154,8 +161,20 @@ export default function RoomPage() {
             <span className="font-medium">{state.config.name}</span>
             <span className="text-ink-mute">#{state.id}</span>
           </div>
-          <div className="text-sm text-ink-soft tabular-nums">
-            第 {Math.max(1, state.currentRound)}/{state.config.rounds} 回合
+          <div className="flex items-center gap-3">
+            <div className="text-sm text-ink-soft tabular-nums">
+              第 {Math.max(1, state.currentRound)}/{state.config.rounds} 回合
+            </div>
+            {isHost && (
+              <button
+                onClick={handleDissolve}
+                className="flex items-center gap-1 text-xs text-rose-600 hover:text-rose-700"
+                title="解散房间"
+              >
+                <Trash2 size={12} />
+                解散
+              </button>
+            )}
           </div>
         </div>
       </header>

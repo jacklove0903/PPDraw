@@ -43,10 +43,14 @@ export default function LobbyPage() {
     });
   };
 
+  const myPlayerId = useUserStore((s) => s.playerId);
+
   const handleJoin = (room: RoomSummary) => {
     const s = getSocket();
     let password: string | undefined;
-    if (room.hasPassword) {
+    // 创建者本人加入自己的房间，不需要再输入密码
+    const isMine = room.creatorId === myPlayerId;
+    if (room.hasPassword && !isMine) {
       const input = window.prompt(`房间「${room.name}」需要密码`);
       if (input === null) return; // 用户取消
       password = input;

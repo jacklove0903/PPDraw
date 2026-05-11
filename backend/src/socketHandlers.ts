@@ -44,6 +44,7 @@ export function registerSocketHandlers(io: IO, socket: IOSocket) {
       return;
     }
     const room = roomManager.create(config);
+    room.creatorId = socket.data.playerId;
     cb({ ok: true, roomId: room.id });
   });
 
@@ -81,7 +82,10 @@ export function registerSocketHandlers(io: IO, socket: IOSocket) {
       cb({ ok: false, error: '房间不存在' });
       return;
     }
-    if (room.password && room.password !== password) {
+    // 创建者本人 / 已经在房间里的玩家：免密码
+    const isCreator = room.creatorId === playerId;
+    const isAlreadyIn = room.players.has(playerId);
+    if (room.password && room.password !== password && !isCreator && !isAlreadyIn) {
       cb({ ok: false, error: '密码错误' });
       return;
     }
@@ -114,6 +118,28 @@ export function registerSocketHandlers(io: IO, socket: IOSocket) {
   // 离开房间
   socket.on('room:leave', () => {
     leaveCurrentRoom(io, socket);
+  });
+
+  // 房主解散房间
+  socket.on('room:dissolve', () => {
+    const room = currentRoom(socket);
+    if (!room) return;
+    if (room.hostId !== socket.data.playerId) {
+      socket.emit('error:message', '只有房主可以解散房间');
+      return;
+    }
+    // 通知所有客户端
+    io.to(room.id).emit('room:dissolved');
+    // 清理每个 socket 的房间状态
+    for (const sid of room.socketByPlayerId.values()) {
+      const s = io.sockets.sockets.get(sid);
+      if (s) {
+        s.leave(room.id);
+        s.data.roomId = undefined;
+      }
+    }
+    room.engine?.cleanup();
+    roomManager.remove(room.id);
   });
 
   // 开始游戏（仅房主）
