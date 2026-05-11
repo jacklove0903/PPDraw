@@ -47,6 +47,27 @@ export function registerSocketHandlers(io: IO, socket: IOSocket) {
     cb({ ok: true, roomId: room.id });
   });
 
+  // 快速匹配：找一个可加入的房间，没有则用默认配置创建一个
+  socket.on('room:quickMatch', (cb) => {
+    if (!socket.data.playerId) {
+      cb({ ok: false, error: '请先设置昵称' });
+      return;
+    }
+    const existing = roomManager.findMatchable();
+    if (existing) {
+      cb({ ok: true, roomId: existing.id });
+      return;
+    }
+    const room = roomManager.create({
+      name: `${socket.data.name ?? '玩家'} 的快速房间`,
+      maxPlayers: 8,
+      rounds: 3,
+      roundSeconds: 80,
+      category: 'all',
+    });
+    cb({ ok: true, roomId: room.id });
+  });
+
   // 加入房间
   socket.on('room:join', ({ roomId, password }, cb) => {
     const { playerId, name, avatar } = socket.data;

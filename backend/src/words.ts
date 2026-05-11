@@ -1,4 +1,6 @@
-// 基础词库（MVP 版本，后续扩展）
+// 词库
+// 涵盖 20+ 分类，约 300+ 词。
+// difficulty: easy(简单) / medium(中等) / hard(困难)
 
 export type Difficulty = 'easy' | 'medium' | 'hard';
 
@@ -9,62 +11,368 @@ export interface Word {
 }
 
 export const WORDS: Word[] = [
-  // 动物
+  // ===== 动物 =====
   { word: '猫', difficulty: 'easy', category: '动物' },
   { word: '狗', difficulty: 'easy', category: '动物' },
+  { word: '猪', difficulty: 'easy', category: '动物' },
+  { word: '牛', difficulty: 'easy', category: '动物' },
+  { word: '马', difficulty: 'easy', category: '动物' },
+  { word: '羊', difficulty: 'easy', category: '动物' },
+  { word: '鸡', difficulty: 'easy', category: '动物' },
+  { word: '鸭子', difficulty: 'easy', category: '动物' },
   { word: '兔子', difficulty: 'easy', category: '动物' },
   { word: '大象', difficulty: 'easy', category: '动物' },
+  { word: '老虎', difficulty: 'easy', category: '动物' },
+  { word: '狮子', difficulty: 'easy', category: '动物' },
   { word: '熊猫', difficulty: 'easy', category: '动物' },
+  { word: '猴子', difficulty: 'easy', category: '动物' },
+  { word: '鲨鱼', difficulty: 'medium', category: '动物' },
   { word: '长颈鹿', difficulty: 'medium', category: '动物' },
   { word: '袋鼠', difficulty: 'medium', category: '动物' },
   { word: '海豚', difficulty: 'medium', category: '动物' },
-  { word: '犀牛', difficulty: 'hard', category: '动物' },
+  { word: '蝴蝶', difficulty: 'medium', category: '动物' },
+  { word: '蜗牛', difficulty: 'medium', category: '动物' },
+  { word: '青蛙', difficulty: 'medium', category: '动物' },
+  { word: '乌龟', difficulty: 'medium', category: '动物' },
+  { word: '螃蟹', difficulty: 'medium', category: '动物' },
+  { word: '章鱼', difficulty: 'medium', category: '动物' },
   { word: '考拉', difficulty: 'hard', category: '动物' },
+  { word: '犀牛', difficulty: 'hard', category: '动物' },
+  { word: '河马', difficulty: 'hard', category: '动物' },
+  { word: '刺猬', difficulty: 'hard', category: '动物' },
+  { word: '鳄鱼', difficulty: 'hard', category: '动物' },
+  { word: '蝙蝠', difficulty: 'hard', category: '动物' },
 
-  // 食物
-  { word: '苹果', difficulty: 'easy', category: '食物' },
-  { word: '香蕉', difficulty: 'easy', category: '食物' },
+  // ===== 水果 =====
+  { word: '苹果', difficulty: 'easy', category: '水果' },
+  { word: '香蕉', difficulty: 'easy', category: '水果' },
+  { word: '葡萄', difficulty: 'easy', category: '水果' },
+  { word: '西瓜', difficulty: 'easy', category: '水果' },
+  { word: '橙子', difficulty: 'easy', category: '水果' },
+  { word: '草莓', difficulty: 'easy', category: '水果' },
+  { word: '梨', difficulty: 'easy', category: '水果' },
+  { word: '桃子', difficulty: 'easy', category: '水果' },
+  { word: '菠萝', difficulty: 'medium', category: '水果' },
+  { word: '榴莲', difficulty: 'medium', category: '水果' },
+  { word: '芒果', difficulty: 'medium', category: '水果' },
+  { word: '猕猴桃', difficulty: 'medium', category: '水果' },
+  { word: '樱桃', difficulty: 'medium', category: '水果' },
+  { word: '荔枝', difficulty: 'hard', category: '水果' },
+  { word: '山竹', difficulty: 'hard', category: '水果' },
+  { word: '火龙果', difficulty: 'hard', category: '水果' },
+
+  // ===== 蔬菜 =====
+  { word: '白菜', difficulty: 'easy', category: '蔬菜' },
+  { word: '萝卜', difficulty: 'easy', category: '蔬菜' },
+  { word: '土豆', difficulty: 'easy', category: '蔬菜' },
+  { word: '番茄', difficulty: 'easy', category: '蔬菜' },
+  { word: '黄瓜', difficulty: 'easy', category: '蔬菜' },
+  { word: '茄子', difficulty: 'easy', category: '蔬菜' },
+  { word: '辣椒', difficulty: 'medium', category: '蔬菜' },
+  { word: '玉米', difficulty: 'medium', category: '蔬菜' },
+  { word: '南瓜', difficulty: 'medium', category: '蔬菜' },
+  { word: '蘑菇', difficulty: 'medium', category: '蔬菜' },
+  { word: '洋葱', difficulty: 'medium', category: '蔬菜' },
+  { word: '芹菜', difficulty: 'hard', category: '蔬菜' },
+  { word: '花椰菜', difficulty: 'hard', category: '蔬菜' },
+
+  // ===== 食物 =====
+  { word: '米饭', difficulty: 'easy', category: '食物' },
+  { word: '面条', difficulty: 'easy', category: '食物' },
+  { word: '面包', difficulty: 'easy', category: '食物' },
   { word: '披萨', difficulty: 'easy', category: '食物' },
   { word: '汉堡', difficulty: 'easy', category: '食物' },
-  { word: '面条', difficulty: 'medium', category: '食物' },
+  { word: '蛋糕', difficulty: 'easy', category: '食物' },
+  { word: '饺子', difficulty: 'easy', category: '食物' },
+  { word: '包子', difficulty: 'easy', category: '食物' },
   { word: '寿司', difficulty: 'medium', category: '食物' },
   { word: '冰淇淋', difficulty: 'medium', category: '食物' },
-  { word: '饺子', difficulty: 'hard', category: '食物' },
+  { word: '热狗', difficulty: 'medium', category: '食物' },
+  { word: '薯条', difficulty: 'medium', category: '食物' },
+  { word: '火锅', difficulty: 'medium', category: '食物' },
+  { word: '烤鸭', difficulty: 'medium', category: '食物' },
+  { word: '汤圆', difficulty: 'hard', category: '食物' },
+  { word: '麻辣烫', difficulty: 'hard', category: '食物' },
+  { word: '小笼包', difficulty: 'hard', category: '食物' },
+  { word: '甜甜圈', difficulty: 'hard', category: '食物' },
 
-  // 生活物品
+  // ===== 日常物品 =====
   { word: '雨伞', difficulty: 'easy', category: '物品' },
   { word: '手机', difficulty: 'easy', category: '物品' },
   { word: '电视', difficulty: 'easy', category: '物品' },
+  { word: '电脑', difficulty: 'easy', category: '物品' },
   { word: '钟表', difficulty: 'easy', category: '物品' },
+  { word: '剪刀', difficulty: 'easy', category: '物品' },
+  { word: '书本', difficulty: 'easy', category: '物品' },
+  { word: '铅笔', difficulty: 'easy', category: '物品' },
+  { word: '杯子', difficulty: 'easy', category: '物品' },
+  { word: '勺子', difficulty: 'easy', category: '物品' },
   { word: '眼镜', difficulty: 'medium', category: '物品' },
   { word: '钥匙', difficulty: 'medium', category: '物品' },
-  { word: '吉他', difficulty: 'medium', category: '物品' },
+  { word: '钱包', difficulty: 'medium', category: '物品' },
+  { word: '背包', difficulty: 'medium', category: '物品' },
+  { word: '相机', difficulty: 'medium', category: '物品' },
+  { word: '耳机', difficulty: 'medium', category: '物品' },
+  { word: '牙刷', difficulty: 'medium', category: '物品' },
+  { word: '镜子', difficulty: 'medium', category: '物品' },
+  { word: '台灯', difficulty: 'medium', category: '物品' },
   { word: '显微镜', difficulty: 'hard', category: '物品' },
+  { word: '望远镜', difficulty: 'hard', category: '物品' },
+  { word: '吹风机', difficulty: 'hard', category: '物品' },
+  { word: '洗衣机', difficulty: 'hard', category: '物品' },
+  { word: '冰箱', difficulty: 'hard', category: '物品' },
+  { word: '微波炉', difficulty: 'hard', category: '物品' },
 
-  // 自然
+  // ===== 自然 =====
   { word: '太阳', difficulty: 'easy', category: '自然' },
   { word: '月亮', difficulty: 'easy', category: '自然' },
+  { word: '星星', difficulty: 'easy', category: '自然' },
+  { word: '云朵', difficulty: 'easy', category: '自然' },
   { word: '彩虹', difficulty: 'easy', category: '自然' },
+  { word: '雨', difficulty: 'easy', category: '自然' },
+  { word: '雪', difficulty: 'easy', category: '自然' },
+  { word: '山', difficulty: 'easy', category: '自然' },
+  { word: '河', difficulty: 'easy', category: '自然' },
+  { word: '树', difficulty: 'easy', category: '自然' },
   { word: '闪电', difficulty: 'medium', category: '自然' },
   { word: '火山', difficulty: 'medium', category: '自然' },
+  { word: '瀑布', difficulty: 'medium', category: '自然' },
+  { word: '沙漠', difficulty: 'medium', category: '自然' },
+  { word: '海洋', difficulty: 'medium', category: '自然' },
+  { word: '岛屿', difficulty: 'medium', category: '自然' },
+  { word: '冰川', difficulty: 'hard', category: '自然' },
   { word: '龙卷风', difficulty: 'hard', category: '自然' },
+  { word: '极光', difficulty: 'hard', category: '自然' },
 
-  // 交通
+  // ===== 交通工具 =====
   { word: '汽车', difficulty: 'easy', category: '交通' },
   { word: '飞机', difficulty: 'easy', category: '交通' },
   { word: '自行车', difficulty: 'easy', category: '交通' },
-  { word: '火车', difficulty: 'medium', category: '交通' },
+  { word: '公交车', difficulty: 'easy', category: '交通' },
+  { word: '出租车', difficulty: 'easy', category: '交通' },
+  { word: '火车', difficulty: 'easy', category: '交通' },
+  { word: '船', difficulty: 'easy', category: '交通' },
+  { word: '摩托车', difficulty: 'medium', category: '交通' },
+  { word: '直升机', difficulty: 'medium', category: '交通' },
+  { word: '高铁', difficulty: 'medium', category: '交通' },
   { word: '热气球', difficulty: 'medium', category: '交通' },
+  { word: '滑板', difficulty: 'medium', category: '交通' },
   { word: '潜水艇', difficulty: 'hard', category: '交通' },
+  { word: '宇宙飞船', difficulty: 'hard', category: '交通' },
+  { word: '独木舟', difficulty: 'hard', category: '交通' },
+
+  // ===== 运动 =====
+  { word: '足球', difficulty: 'easy', category: '运动' },
+  { word: '篮球', difficulty: 'easy', category: '运动' },
+  { word: '乒乓球', difficulty: 'easy', category: '运动' },
+  { word: '羽毛球', difficulty: 'easy', category: '运动' },
+  { word: '网球', difficulty: 'easy', category: '运动' },
+  { word: '游泳', difficulty: 'easy', category: '运动' },
+  { word: '跑步', difficulty: 'easy', category: '运动' },
+  { word: '跳绳', difficulty: 'medium', category: '运动' },
+  { word: '滑雪', difficulty: 'medium', category: '运动' },
+  { word: '冲浪', difficulty: 'medium', category: '运动' },
+  { word: '攀岩', difficulty: 'medium', category: '运动' },
+  { word: '高尔夫', difficulty: 'medium', category: '运动' },
+  { word: '保龄球', difficulty: 'medium', category: '运动' },
+  { word: '体操', difficulty: 'hard', category: '运动' },
+  { word: '击剑', difficulty: 'hard', category: '运动' },
+  { word: '跆拳道', difficulty: 'hard', category: '运动' },
+  { word: '马拉松', difficulty: 'hard', category: '运动' },
+
+  // ===== 职业 =====
+  { word: '老师', difficulty: 'easy', category: '职业' },
+  { word: '医生', difficulty: 'easy', category: '职业' },
+  { word: '警察', difficulty: 'easy', category: '职业' },
+  { word: '厨师', difficulty: 'easy', category: '职业' },
+  { word: '司机', difficulty: 'easy', category: '职业' },
+  { word: '护士', difficulty: 'easy', category: '职业' },
+  { word: '画家', difficulty: 'easy', category: '职业' },
+  { word: '歌手', difficulty: 'easy', category: '职业' },
+  { word: '消防员', difficulty: 'medium', category: '职业' },
+  { word: '宇航员', difficulty: 'medium', category: '职业' },
+  { word: '飞行员', difficulty: 'medium', category: '职业' },
+  { word: '魔术师', difficulty: 'medium', category: '职业' },
+  { word: '理发师', difficulty: 'medium', category: '职业' },
+  { word: '摄影师', difficulty: 'medium', category: '职业' },
+  { word: '科学家', difficulty: 'hard', category: '职业' },
+  { word: '建筑师', difficulty: 'hard', category: '职业' },
+  { word: '律师', difficulty: 'hard', category: '职业' },
+  { word: '法官', difficulty: 'hard', category: '职业' },
+
+  // ===== 服饰 =====
+  { word: '裙子', difficulty: 'easy', category: '服饰' },
+  { word: '裤子', difficulty: 'easy', category: '服饰' },
+  { word: '帽子', difficulty: 'easy', category: '服饰' },
+  { word: '袜子', difficulty: 'easy', category: '服饰' },
+  { word: '鞋子', difficulty: 'easy', category: '服饰' },
+  { word: '衬衫', difficulty: 'medium', category: '服饰' },
+  { word: '外套', difficulty: 'medium', category: '服饰' },
+  { word: '围巾', difficulty: 'medium', category: '服饰' },
+  { word: '手套', difficulty: 'medium', category: '服饰' },
+  { word: '领带', difficulty: 'medium', category: '服饰' },
+  { word: '皮带', difficulty: 'medium', category: '服饰' },
+  { word: '高跟鞋', difficulty: 'hard', category: '服饰' },
+  { word: '羽绒服', difficulty: 'hard', category: '服饰' },
+
+  // ===== 乐器 =====
+  { word: '钢琴', difficulty: 'easy', category: '乐器' },
+  { word: '吉他', difficulty: 'easy', category: '乐器' },
+  { word: '鼓', difficulty: 'easy', category: '乐器' },
+  { word: '小提琴', difficulty: 'medium', category: '乐器' },
+  { word: '笛子', difficulty: 'medium', category: '乐器' },
+  { word: '口琴', difficulty: 'medium', category: '乐器' },
+  { word: '萨克斯', difficulty: 'medium', category: '乐器' },
+  { word: '架子鼓', difficulty: 'medium', category: '乐器' },
+  { word: '二胡', difficulty: 'hard', category: '乐器' },
+  { word: '古筝', difficulty: 'hard', category: '乐器' },
+  { word: '琵琶', difficulty: 'hard', category: '乐器' },
+  { word: '手风琴', difficulty: 'hard', category: '乐器' },
+
+  // ===== 身体部位 =====
+  { word: '头', difficulty: 'easy', category: '身体' },
+  { word: '眼睛', difficulty: 'easy', category: '身体' },
+  { word: '鼻子', difficulty: 'easy', category: '身体' },
+  { word: '嘴巴', difficulty: 'easy', category: '身体' },
+  { word: '耳朵', difficulty: 'easy', category: '身体' },
+  { word: '手', difficulty: 'easy', category: '身体' },
+  { word: '脚', difficulty: 'easy', category: '身体' },
+  { word: '头发', difficulty: 'medium', category: '身体' },
+  { word: '眉毛', difficulty: 'medium', category: '身体' },
+  { word: '舌头', difficulty: 'medium', category: '身体' },
+  { word: '心脏', difficulty: 'hard', category: '身体' },
+  { word: '骨头', difficulty: 'hard', category: '身体' },
+
+  // ===== 动作 =====
+  { word: '跑步', difficulty: 'easy', category: '动作' },
+  { word: '跳跃', difficulty: 'easy', category: '动作' },
+  { word: '睡觉', difficulty: 'easy', category: '动作' },
+  { word: '吃饭', difficulty: 'easy', category: '动作' },
+  { word: '喝水', difficulty: 'easy', category: '动作' },
+  { word: '唱歌', difficulty: 'easy', category: '动作' },
+  { word: '跳舞', difficulty: 'easy', category: '动作' },
+  { word: '拥抱', difficulty: 'medium', category: '动作' },
+  { word: '握手', difficulty: 'medium', category: '动作' },
+  { word: '挥手', difficulty: 'medium', category: '动作' },
+  { word: '鼓掌', difficulty: 'medium', category: '动作' },
+  { word: '哭泣', difficulty: 'medium', category: '动作' },
+  { word: '打喷嚏', difficulty: 'hard', category: '动作' },
+  { word: '打哈欠', difficulty: 'hard', category: '动作' },
+  { word: '深呼吸', difficulty: 'hard', category: '动作' },
+
+  // ===== 情绪 =====
+  { word: '开心', difficulty: 'easy', category: '情绪' },
+  { word: '难过', difficulty: 'easy', category: '情绪' },
+  { word: '生气', difficulty: 'easy', category: '情绪' },
+  { word: '害怕', difficulty: 'easy', category: '情绪' },
+  { word: '惊讶', difficulty: 'medium', category: '情绪' },
+  { word: '害羞', difficulty: 'medium', category: '情绪' },
+  { word: '尴尬', difficulty: 'medium', category: '情绪' },
+  { word: '兴奋', difficulty: 'medium', category: '情绪' },
+  { word: '失望', difficulty: 'hard', category: '情绪' },
+  { word: '骄傲', difficulty: 'hard', category: '情绪' },
+  { word: '嫉妒', difficulty: 'hard', category: '情绪' },
+
+  // ===== 节日 =====
+  { word: '春节', difficulty: 'easy', category: '节日' },
+  { word: '圣诞节', difficulty: 'easy', category: '节日' },
+  { word: '生日', difficulty: 'easy', category: '节日' },
+  { word: '万圣节', difficulty: 'medium', category: '节日' },
+  { word: '中秋节', difficulty: 'medium', category: '节日' },
+  { word: '端午节', difficulty: 'medium', category: '节日' },
+  { word: '情人节', difficulty: 'medium', category: '节日' },
+  { word: '感恩节', difficulty: 'hard', category: '节日' },
+  { word: '复活节', difficulty: 'hard', category: '节日' },
+
+  // ===== 建筑 =====
+  { word: '房子', difficulty: 'easy', category: '建筑' },
+  { word: '学校', difficulty: 'easy', category: '建筑' },
+  { word: '医院', difficulty: 'easy', category: '建筑' },
+  { word: '银行', difficulty: 'medium', category: '建筑' },
+  { word: '教堂', difficulty: 'medium', category: '建筑' },
+  { word: '城堡', difficulty: 'medium', category: '建筑' },
+  { word: '灯塔', difficulty: 'medium', category: '建筑' },
+  { word: '桥', difficulty: 'medium', category: '建筑' },
+  { word: '摩天大楼', difficulty: 'hard', category: '建筑' },
+  { word: '金字塔', difficulty: 'hard', category: '建筑' },
+
+  // ===== 影视 / 动漫 =====
+  { word: '哈利波特', difficulty: 'easy', category: '影视动漫' },
+  { word: '钢铁侠', difficulty: 'easy', category: '影视动漫' },
+  { word: '蜘蛛侠', difficulty: 'easy', category: '影视动漫' },
+  { word: '蝙蝠侠', difficulty: 'easy', category: '影视动漫' },
+  { word: '超人', difficulty: 'easy', category: '影视动漫' },
+  { word: '美队', difficulty: 'medium', category: '影视动漫' },
+  { word: '海绵宝宝', difficulty: 'medium', category: '影视动漫' },
+  { word: '皮卡丘', difficulty: 'medium', category: '影视动漫' },
+  { word: '哆啦A梦', difficulty: 'medium', category: '影视动漫' },
+  { word: '柯南', difficulty: 'medium', category: '影视动漫' },
+  { word: '路飞', difficulty: 'medium', category: '影视动漫' },
+  { word: '孙悟空', difficulty: 'medium', category: '影视动漫' },
+  { word: '熊大', difficulty: 'medium', category: '影视动漫' },
+  { word: '小猪佩奇', difficulty: 'hard', category: '影视动漫' },
+  { word: '蜡笔小新', difficulty: 'hard', category: '影视动漫' },
+
+  // ===== 网络流行词 =====
+  { word: '内卷', difficulty: 'easy', category: '网络流行' },
+  { word: '躺平', difficulty: 'easy', category: '网络流行' },
+  { word: '打工人', difficulty: 'easy', category: '网络流行' },
+  { word: '尾款人', difficulty: 'medium', category: '网络流行' },
+  { word: '社畜', difficulty: 'medium', category: '网络流行' },
+  { word: '佛系', difficulty: 'medium', category: '网络流行' },
+  { word: '咕咕咕', difficulty: 'medium', category: '网络流行' },
+  { word: '柠檬精', difficulty: 'medium', category: '网络流行' },
+  { word: '凡尔赛', difficulty: 'hard', category: '网络流行' },
+  { word: '社恐', difficulty: 'hard', category: '网络流行' },
+  { word: '破防', difficulty: 'hard', category: '网络流行' },
+  { word: 'YYDS', difficulty: 'hard', category: '网络流行' },
+
+  // ===== 国家 / 地标 =====
+  { word: '中国', difficulty: 'easy', category: '国家地标' },
+  { word: '美国', difficulty: 'easy', category: '国家地标' },
+  { word: '日本', difficulty: 'easy', category: '国家地标' },
+  { word: '法国', difficulty: 'easy', category: '国家地标' },
+  { word: '长城', difficulty: 'medium', category: '国家地标' },
+  { word: '埃菲尔铁塔', difficulty: 'medium', category: '国家地标' },
+  { word: '自由女神', difficulty: 'medium', category: '国家地标' },
+  { word: '富士山', difficulty: 'medium', category: '国家地标' },
+  { word: '比萨斜塔', difficulty: 'hard', category: '国家地标' },
+  { word: '泰姬陵', difficulty: 'hard', category: '国家地标' },
+  { word: '故宫', difficulty: 'hard', category: '国家地标' },
+
+  // ===== 成语 (高难) =====
+  { word: '画蛇添足', difficulty: 'hard', category: '成语' },
+  { word: '守株待兔', difficulty: 'hard', category: '成语' },
+  { word: '亡羊补牢', difficulty: 'hard', category: '成语' },
+  { word: '叶公好龙', difficulty: 'hard', category: '成语' },
+  { word: '掩耳盗铃', difficulty: 'hard', category: '成语' },
+  { word: '杯弓蛇影', difficulty: 'hard', category: '成语' },
+  { word: '画龙点睛', difficulty: 'hard', category: '成语' },
+  { word: '井底之蛙', difficulty: 'hard', category: '成语' },
+  { word: '狐假虎威', difficulty: 'hard', category: '成语' },
+  { word: '滥竽充数', difficulty: 'hard', category: '成语' },
+  { word: '南辕北辙', difficulty: 'hard', category: '成语' },
+  { word: '对牛弹琴', difficulty: 'hard', category: '成语' },
+  { word: '愚公移山', difficulty: 'hard', category: '成语' },
+  { word: '塞翁失马', difficulty: 'hard', category: '成语' },
 ];
 
-/** 随机抽取 n 个不重复的词 */
-export function pickRandomWords(n: number): Word[] {
-  const pool = [...WORDS];
+/**
+ * 随机抽取 n 个不重复的词。
+ * @param category 分类 id；为 undefined / 'all' / 不存在时使用全词库。
+ */
+export function pickRandomWords(n: number, category?: string): Word[] {
+  const pool =
+    category && category !== 'all'
+      ? WORDS.filter((w) => w.category === category)
+      : [...WORDS];
+  // 若指定分类词太少则回退到全库
+  const source = pool.length >= n ? pool : [...WORDS];
+  const shuffled = source.slice();
   const result: Word[] = [];
-  for (let i = 0; i < n && pool.length > 0; i++) {
-    const idx = Math.floor(Math.random() * pool.length);
-    result.push(pool.splice(idx, 1)[0]);
+  for (let i = 0; i < n && shuffled.length > 0; i++) {
+    const idx = Math.floor(Math.random() * shuffled.length);
+    result.push(shuffled.splice(idx, 1)[0]);
   }
   return result;
 }

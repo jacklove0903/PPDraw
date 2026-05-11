@@ -191,7 +191,7 @@ export class GameEngine implements RoomEngine {
       this.roundStartScores.set(p.id, p.score);
     }
 
-    this.wordChoices = pickRandomWords(3);
+    this.wordChoices = pickRandomWords(3, this.room.config.category);
 
     broadcastRoomState(this.io, this.room);
 

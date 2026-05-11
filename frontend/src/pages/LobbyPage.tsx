@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, Plus, RefreshCw, Search, Zap } from 'lucide-react';
-import type { RoomSummary } from '@shared/events';
+import type { RoomConfig, RoomSummary } from '@shared/events';
 import { useUserStore } from '@/store/user';
 import { Avatar } from '@/components/Avatar';
+import { CreateRoomModal } from '@/components/CreateRoomModal';
 import { getSocket } from '@/socket/client';
 
 export default function LobbyPage() {
@@ -12,6 +13,7 @@ export default function LobbyPage() {
   const [rooms, setRooms] = useState<RoomSummary[]>([]);
   const [keyword, setKeyword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showCreate, setShowCreate] = useState(false);
 
   const refresh = () => {
     setLoading(true);
@@ -29,29 +31,37 @@ export default function LobbyPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleCreate = () => {
+  const handleCreate = (config: RoomConfig) => {
     const s = getSocket();
-    s.emit(
-      'room:create',
-      {
-        name: `${name} 的房间`,
-        maxPlayers: 8,
-        rounds: 3,
-        roundSeconds: 80,
-      },
-      (res) => {
-        if (res.ok && res.roomId) {
-          navigate(`/room/${res.roomId}`);
-        }
-      },
-    );
+    s.emit('room:create', config, (res) => {
+      if (res.ok && res.roomId) {
+        setShowCreate(false);
+        navigate(`/room/${res.roomId}`);
+      } else {
+        alert(res.error || '创建失败');
+      }
+    });
   };
 
-  const handleJoin = (roomId: string) => {
+  const handleJoin = (room: RoomSummary) => {
     const s = getSocket();
-    s.emit('room:join', { roomId }, (res) => {
-      if (res.ok) navigate(`/room/${roomId}`);
+    let password: string | undefined;
+    if (room.hasPassword) {
+      const input = window.prompt(`房间「${room.name}」需要密码`);
+      if (input === null) return; // 用户取消
+      password = input;
+    }
+    s.emit('room:join', { roomId: room.id, password }, (res) => {
+      if (res.ok) navigate(`/room/${room.id}`);
       else alert(res.error || '加入失败');
+    });
+  };
+
+  const handleQuickMatch = () => {
+    const s = getSocket();
+    s.emit('room:quickMatch', (res) => {
+      if (res.ok && res.roomId) navigate(`/room/${res.roomId}`);
+      else alert(res.error || '匹配失败');
     });
   };
 
@@ -86,11 +96,11 @@ export default function LobbyPage() {
             <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
           </button>
           <div className="flex-1" />
-          <button onClick={() => alert('快速匹配：开发中')} className="btn-ghost">
+          <button onClick={handleQuickMatch} className="btn-ghost">
             <Zap size={14} />
             快速匹配
           </button>
-          <button onClick={handleCreate} className="btn-accent">
+          <button onClick={() => setShowCreate(true)} className="btn-accent">
             <Plus size={14} />
             创建房间
           </button>
@@ -126,7 +136,7 @@ export default function LobbyPage() {
                 <div className="col-span-2 text-right">
                   <button
                     disabled={r.status !== 'waiting' || r.playerCount >= r.maxPlayers}
-                    onClick={() => handleJoin(r.id)}
+                    onClick={() => handleJoin(r)}
                     className="btn-primary h-8 px-3 text-xs"
                   >
                     加入
@@ -137,6 +147,14 @@ export default function LobbyPage() {
           )}
         </div>
       </section>
+
+      {showCreate && (
+        <CreateRoomModal
+          defaultName={`${name} 的房间`}
+          onClose={() => setShowCreate(false)}
+          onSubmit={handleCreate}
+        />
+      )}
     </main>
   );
 }

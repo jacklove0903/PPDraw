@@ -90,6 +90,18 @@ export class RoomManager {
     }));
   }
 
+  /** 寻找可加入的房间：等待中、无密码、未满。优先选玩家更多的（更可能马上开始） */
+  findMatchable(): Room | undefined {
+    const candidates = Array.from(this.rooms.values()).filter(
+      (r) =>
+        r.status === 'waiting' &&
+        !r.password &&
+        r.players.size < r.config.maxPlayers,
+    );
+    candidates.sort((a, b) => b.players.size - a.players.size);
+    return candidates[0];
+  }
+
   toState(room: Room, viewerId?: string): RoomState {
     return {
       id: room.id,

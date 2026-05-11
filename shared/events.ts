@@ -1,5 +1,36 @@
 // 前后端共享的 Socket.IO 事件协议与类型定义
 
+/**
+ * 词库分类常量。'all' 表示混合所有分类（随机）。
+ * 前后端共享，CreateRoomModal 与 pickRandomWords 都基于此。
+ */
+export const CATEGORIES = [
+  { id: 'all', label: '随机混合', emoji: '🎲' },
+  { id: '动物', label: '动物', emoji: '🐶' },
+  { id: '水果', label: '水果', emoji: '🍎' },
+  { id: '蔬菜', label: '蔬菜', emoji: '🥕' },
+  { id: '食物', label: '食物', emoji: '🍜' },
+  { id: '物品', label: '日常物品', emoji: '📱' },
+  { id: '自然', label: '自然现象', emoji: '🌈' },
+  { id: '交通', label: '交通工具', emoji: '🚗' },
+  { id: '运动', label: '运动', emoji: '⚽' },
+  { id: '职业', label: '职业', emoji: '👨‍🍳' },
+  { id: '服饰', label: '服饰', emoji: '👕' },
+  { id: '乐器', label: '乐器', emoji: '🎸' },
+  { id: '身体', label: '身体部位', emoji: '🦵' },
+  { id: '动作', label: '动作', emoji: '🏃' },
+  { id: '情绪', label: '情绪', emoji: '😊' },
+  { id: '节日', label: '节日', emoji: '🎄' },
+  { id: '建筑', label: '建筑', emoji: '🏛️' },
+  { id: '影视动漫', label: '影视 / 动漫', emoji: '🎬' },
+  { id: '网络流行', label: '网络流行词', emoji: '🔥' },
+  { id: '国家地标', label: '国家 / 地标', emoji: '🗽' },
+  { id: '成语', label: '成语 (高难)', emoji: '📜' },
+] as const;
+
+export type CategoryId = typeof CATEGORIES[number]['id'];
+
+
 export interface Player {
   id: string;
   name: string;
@@ -68,6 +99,8 @@ export interface ClientToServerEvents {
   'lobby:list': (cb: (rooms: RoomSummary[]) => void) => void;
   'room:create': (config: RoomConfig, cb: (res: { ok: boolean; roomId?: string; error?: string }) => void) => void;
   'room:join': (payload: { roomId: string; password?: string }, cb: (res: { ok: boolean; error?: string }) => void) => void;
+  /** 快速匹配：寻找任一无密码、等待中、未满的房间；若无则自动创建一个 */
+  'room:quickMatch': (cb: (res: { ok: boolean; roomId?: string; error?: string }) => void) => void;
   'room:leave': () => void;
   'room:start': () => void;
   'game:chooseWord': (word: string) => void;
