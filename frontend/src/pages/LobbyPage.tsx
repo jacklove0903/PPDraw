@@ -5,6 +5,7 @@ import type { RoomConfig, RoomSummary } from '@shared/events';
 import { useUserStore } from '@/store/user';
 import { Avatar } from '@/components/Avatar';
 import { CreateRoomModal } from '@/components/CreateRoomModal';
+import { promptDialog, toast } from '@/components/dialog/dialogStore';
 import { getSocket } from '@/socket/client';
 
 export default function LobbyPage() {
@@ -38,26 +39,32 @@ export default function LobbyPage() {
         setShowCreate(false);
         navigate(`/room/${res.roomId}`);
       } else {
-        alert(res.error || '创建失败');
+        toast.error(res.error || '创建失败');
       }
     });
   };
 
   const myPlayerId = useUserStore((s) => s.playerId);
 
-  const handleJoin = (room: RoomSummary) => {
+  const handleJoin = async (room: RoomSummary) => {
     const s = getSocket();
     let password: string | undefined;
     // 创建者本人加入自己的房间，不需要再输入密码
     const isMine = room.creatorId === myPlayerId;
     if (room.hasPassword && !isMine) {
-      const input = window.prompt(`房间「${room.name}」需要密码`);
+      const input = await promptDialog({
+        title: '需要密码',
+        message: `房间「${room.name}」是私密房间，请输入密码`,
+        placeholder: '请输入密码',
+        inputType: 'password',
+        confirmText: '加入',
+      });
       if (input === null) return; // 用户取消
       password = input;
     }
     s.emit('room:join', { roomId: room.id, password }, (res) => {
       if (res.ok) navigate(`/room/${room.id}`);
-      else alert(res.error || '加入失败');
+      else toast.error(res.error || '加入失败');
     });
   };
 
@@ -65,7 +72,7 @@ export default function LobbyPage() {
     const s = getSocket();
     s.emit('room:quickMatch', (res) => {
       if (res.ok && res.roomId) navigate(`/room/${res.roomId}`);
-      else alert(res.error || '匹配失败');
+      else toast.error(res.error || '匹配失败');
     });
   };
 

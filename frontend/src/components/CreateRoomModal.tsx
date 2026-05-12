@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
 import { CATEGORIES, type RoomConfig } from '@shared/events';
+import { toast } from '@/components/dialog/dialogStore';
 
 interface CreateRoomModalProps {
   defaultName: string;
@@ -23,7 +24,7 @@ export function CreateRoomModal({ defaultName, onClose, onSubmit }: CreateRoomMo
   const submit = () => {
     const trimmed = name.trim();
     if (!trimmed) {
-      alert('请输入房间名');
+      toast.error('请输入房间名');
       return;
     }
     onSubmit({

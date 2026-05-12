@@ -1,4 +1,5 @@
 import { Eraser, Pen, Trash2, Undo2 } from 'lucide-react';
+import { confirmDialog } from '@/components/dialog/dialogStore';
 
 const COLORS = [
   '#171717',
@@ -121,8 +122,14 @@ export function DrawToolbar({
           撤销
         </button>
         <button
-          onClick={() => {
-            if (confirm('确认清空画布？')) onClear();
+          onClick={async () => {
+            const ok = await confirmDialog({
+              title: '清空画布',
+              message: '确认清空当前画布？这一操作无法撤销。',
+              confirmText: '清空',
+              destructive: true,
+            });
+            if (ok) onClear();
           }}
           className="btn-ghost h-8 px-2.5 text-xs"
           title="清空"

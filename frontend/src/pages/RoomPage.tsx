@@ -11,6 +11,7 @@ import { GameEndModal } from '@/components/GameEndModal';
 import { useCountdown } from '@/hooks/useCountdown';
 import { getSocket } from '@/socket/client';
 import { useUserStore } from '@/store/user';
+import { confirmDialog, toast } from '@/components/dialog/dialogStore';
 
 type Difficulty = 'easy' | 'medium' | 'hard';
 
@@ -59,9 +60,9 @@ export default function RoomPage() {
       setWordChoices(words);
     const onRoundEnd = (payload: RoundResult) => setRoundResult(payload);
     const onGameEnd = (payload: { ranking: Player[] }) => setFinalRanking(payload.ranking);
-    const onError = (text: string) => alert(text);
+    const onError = (text: string) => toast.error(text);
     const onDissolved = () => {
-      alert('房间已被房主解散');
+      toast.info('房间已被房主解散');
       navigate('/lobby');
     };
 
@@ -75,7 +76,7 @@ export default function RoomPage() {
 
     s.emit('room:join', { roomId }, (res) => {
       if (!res.ok) {
-        alert(res.error || '加入失败');
+        toast.error(res.error || '加入失败');
         navigate('/lobby');
       }
     });
@@ -120,16 +121,22 @@ export default function RoomPage() {
     getSocket().emit('room:start');
   };
 
-  const handleDissolve = () => {
+  const handleDissolve = async () => {
     if (!isHost) return;
-    if (!confirm('确认解散房间？所有玩家将返回大厅。')) return;
+    const ok = await confirmDialog({
+      title: '解散房间',
+      message: '确认解散房间？所有玩家将返回大厅。',
+      confirmText: '解散',
+      destructive: true,
+    });
+    if (!ok) return;
     getSocket().emit('room:dissolve');
   };
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href).then(
-      () => alert('邀请链接已复制到剪贴板'),
-      () => alert('复制失败，请手动复制地址栏'),
+      () => toast.success('邀请链接已复制'),
+      () => toast.error('复制失败，请手动复制地址栏'),
     );
   };
 
