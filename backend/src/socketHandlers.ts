@@ -17,6 +17,9 @@ interface SocketData {
 type IO = Server<ClientToServerEvents, ServerToClientEvents, {}, SocketData>;
 type IOSocket = Socket<ClientToServerEvents, ServerToClientEvents, {}, SocketData>;
 
+/** 断线宽限期（毫秒）：玩家刷新页面后在此时间内重连则保留房间状态 */
+const GRACE_MS = 30_000;
+
 /** 懒加载获取（或创建）房间的游戏引擎 */
 function getEngine(io: IO, room: Room): GameEngine {
   if (!room.engine) room.engine = new GameEngine(io, room);
@@ -113,6 +116,14 @@ export function registerSocketHandlers(io: IO, socket: IOSocket) {
 
     // 已存在则视为重连
     const existing = room.players.get(playerId);
+    if (existing) {
+      // 取消断线宽限定时器
+      const timer = room.disconnectTimers.get(playerId);
+      if (timer) {
+        clearTimeout(timer);
+        room.disconnectTimers.delete(playerId);
+      }
+    }
     const player: Player = existing ?? {
       id: playerId,
       name,
@@ -139,7 +150,20 @@ export function registerSocketHandlers(io: IO, socket: IOSocket) {
 
   // 离开房间
   socket.on('room:leave', () => {
-    leaveCurrentRoom(io, socket);
+    const room = currentRoom(socket);
+    if (!room) return;
+    const playerId = socket.data.playerId;
+    socket.leave(room.id);
+    socket.data.roomId = undefined;
+    if (playerId) {
+      // 取消可能存在的宽限定时器，直接真正离开
+      const timer = room.disconnectTimers.get(playerId);
+      if (timer) {
+        clearTimeout(timer);
+        room.disconnectTimers.delete(playerId);
+      }
+      doActualLeave(io, room, playerId);
+    }
   });
 
   // 房主解散房间
@@ -152,6 +176,9 @@ export function registerSocketHandlers(io: IO, socket: IOSocket) {
     }
     // 通知所有客户端
     io.to(room.id).emit('room:dissolved');
+    // 清理所有宽限定时器
+    for (const t of room.disconnectTimers.values()) clearTimeout(t);
+    room.disconnectTimers.clear();
     // 清理每个 socket 的房间状态
     for (const sid of room.socketByPlayerId.values()) {
       const s = io.sockets.sockets.get(sid);
@@ -282,26 +309,52 @@ function leaveCurrentRoom(io: IO, socket: IOSocket) {
   const room = currentRoom(socket);
   if (!room) return;
   const playerId = socket.data.playerId;
-  if (playerId) {
-    room.players.delete(playerId);
-    room.socketByPlayerId.delete(playerId);
-    // 房主转移
-    if (room.hostId === playerId) {
-      const next = room.players.values().next().value;
-      if (next) {
-        next.isHost = true;
-        room.hostId = next.id;
-      } else {
-        room.engine?.cleanup();
-        roomManager.remove(room.id);
-        return;
-      }
-    }
-    // 通知引擎玩家离开（画者离开、不足 2 人等会被处理）
-    room.engine?.handlePlayerLeave(playerId);
-  }
+
   socket.leave(room.id);
   socket.data.roomId = undefined;
+
+  if (!playerId) return;
+
+  // 如果已有宽限定时器在跑（重复断线），直接走真正清理
+  const existingTimer = room.disconnectTimers.get(playerId);
+  if (existingTimer) {
+    clearTimeout(existingTimer);
+    room.disconnectTimers.delete(playerId);
+    doActualLeave(io, room, playerId);
+    return;
+  }
+
+  // 启动宽限定时器：30 秒内重连则恢复，超时则真正移除
+  const timer = setTimeout(() => {
+    room.disconnectTimers.delete(playerId);
+    doActualLeave(io, room, playerId);
+  }, GRACE_MS);
+
+  room.disconnectTimers.set(playerId, timer);
+  // 通知其他玩家此人暂时断线（但保留在玩家列表中）
+  broadcastRoomState(io, room);
+}
+
+function doActualLeave(io: IO, room: Room, playerId: string) {
+  room.players.delete(playerId);
+  room.socketByPlayerId.delete(playerId);
+
+  // 房主转移
+  if (room.hostId === playerId) {
+    const next = room.players.values().next().value;
+    if (next) {
+      next.isHost = true;
+      room.hostId = next.id;
+    } else {
+      room.engine?.cleanup();
+      roomManager.remove(room.id);
+      return;
+    }
+  }
+
+  // 通知引擎玩家离开（画者离开、不足 2 人等会被处理）
+  room.engine?.handlePlayerLeave(playerId);
+
   if (room.players.size === 0) {
     room.engine?.cleanup();
     roomManager.remove(room.id);

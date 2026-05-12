@@ -42,6 +42,8 @@ export interface Room {
   socketByPlayerId: Map<string, string>;
   /** 画布笔画历史（用于新加入者同步） */
   strokes: DrawStroke[];
+  /** 断线宽限定时器：playerId → timeout。宽限期内重连则取消 */
+  disconnectTimers: Map<string, NodeJS.Timeout>;
   /** 游戏引擎，懒加载 */
   engine?: RoomEngine;
 }
@@ -71,6 +73,7 @@ export class RoomManager {
       status: 'waiting',
       currentRound: 0,
       strokes: [],
+      disconnectTimers: new Map(),
       socketByPlayerId: new Map(),
     };
     this.rooms.set(id, room);
