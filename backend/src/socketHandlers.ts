@@ -105,6 +105,11 @@ export function registerSocketHandlers(io: IO, socket: IOSocket) {
       cb({ ok: false, error: '房间已满' });
       return;
     }
+    // 游戏已开始 + 不是房间内已有玩家 → 拒绝
+    if (room.status !== 'waiting' && !room.players.has(playerId)) {
+      cb({ ok: false, error: '游戏已经开始，请等待本局结束' });
+      return;
+    }
 
     // 已存在则视为重连
     const existing = room.players.get(playerId);
