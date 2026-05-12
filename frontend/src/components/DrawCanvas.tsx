@@ -115,13 +115,22 @@ export const DrawCanvas = forwardRef<DrawCanvasHandle, DrawCanvasProps>(
         redrawAll();
       };
 
+      const onHistory = (strokes: DrawStroke[]) => {
+        strokesRef.current = strokes.map((s) => ({ ...s, points: [...s.points] }));
+        remoteStrokeIndex.current.clear();
+        strokes.forEach((s, i) => remoteStrokeIndex.current.set(s.strokeId, i));
+        redrawAll();
+      };
+
       s.on('draw:stroke', onStroke);
       s.on('draw:clear', onClear);
       s.on('draw:undo', onUndo);
+      s.on('draw:history', onHistory);
       return () => {
         s.off('draw:stroke', onStroke);
         s.off('draw:clear', onClear);
         s.off('draw:undo', onUndo);
+        s.off('draw:history', onHistory);
       };
     }, [redrawAll]);
 

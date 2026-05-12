@@ -2,6 +2,7 @@ import { nanoid } from 'nanoid';
 import type { Server } from 'socket.io';
 import type {
   ClientToServerEvents,
+  DrawStroke,
   Player,
   RoomConfig,
   RoomState,
@@ -39,6 +40,8 @@ export interface Room {
   creatorId?: string;
   /** 用于断线重连的 socket 映射 */
   socketByPlayerId: Map<string, string>;
+  /** 画布笔画历史（用于新加入者同步） */
+  strokes: DrawStroke[];
   /** 游戏引擎，懒加载 */
   engine?: RoomEngine;
 }
@@ -67,6 +70,7 @@ export class RoomManager {
       players: new Map(),
       status: 'waiting',
       currentRound: 0,
+      strokes: [],
       socketByPlayerId: new Map(),
     };
     this.rooms.set(id, room);

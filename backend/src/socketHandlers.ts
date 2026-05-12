@@ -113,6 +113,11 @@ export function registerSocketHandlers(io: IO, socket: IOSocket) {
 
     cb({ ok: true });
     broadcastRoomState(io, room);
+
+    // 下发当前画布笔画历史（新加入 / 刷新者同步）
+    if (room.strokes.length > 0) {
+      socket.emit('draw:history', room.strokes);
+    }
   });
 
   // 离开房间
@@ -180,18 +185,29 @@ export function registerSocketHandlers(io: IO, socket: IOSocket) {
   socket.on('draw:stroke', (stroke) => {
     const room = currentRoom(socket);
     if (!room || !canDraw(room)) return;
+
+    // 存储到房间历史（增量合并）
+    const existingIdx = room.strokes.findIndex((s) => s.strokeId === stroke.strokeId);
+    if (existingIdx === -1) {
+      room.strokes.push({ ...stroke, points: [...stroke.points] });
+    } else {
+      room.strokes[existingIdx].points.push(...stroke.points);
+    }
+
     socket.to(room.id).emit('draw:stroke', stroke);
   });
 
   socket.on('draw:clear', () => {
     const room = currentRoom(socket);
     if (!room || !canDraw(room)) return;
+    room.strokes = [];
     socket.to(room.id).emit('draw:clear');
   });
 
   socket.on('draw:undo', () => {
     const room = currentRoom(socket);
     if (!room || !canDraw(room)) return;
+    room.strokes.pop();
     socket.to(room.id).emit('draw:undo');
   });
 

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Clock, Play, Trash2 } from 'lucide-react';
+import { ArrowLeft, Clock, Copy, Play, Trash2 } from 'lucide-react';
 import type { ChatMessage, Player, RoomState } from '@shared/events';
 import { Avatar } from '@/components/Avatar';
 import { DrawCanvas, type DrawCanvasHandle } from '@/components/DrawCanvas';
@@ -126,6 +126,13 @@ export default function RoomPage() {
     getSocket().emit('room:dissolve');
   };
 
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href).then(
+      () => alert('邀请链接已复制到剪贴板'),
+      () => alert('复制失败，请手动复制地址栏'),
+    );
+  };
+
   if (!state) {
     return (
       <main className="min-h-screen flex items-center justify-center text-sm text-ink-mute">
@@ -165,6 +172,13 @@ export default function RoomPage() {
           <div className="flex items-center gap-3 text-sm">
             <span className="font-medium">{state.config.name}</span>
             <span className="text-ink-mute">#{state.id}</span>
+            <button
+              onClick={handleCopyLink}
+              className="text-ink-mute hover:text-ink"
+              title="复制邀请链接"
+            >
+              <Copy size={13} />
+            </button>
           </div>
           <div className="flex items-center gap-3">
             <div className="text-sm text-ink-soft tabular-nums">

@@ -133,5 +133,7 @@ export interface ServerToClientEvents {
   'draw:stroke': (stroke: DrawStroke) => void;
   'draw:clear': () => void;
   'draw:undo': () => void;
+  /** 新加入 / 刷新时下发完整笔画历史 */
+  'draw:history': (strokes: DrawStroke[]) => void;
   'error:message': (text: string) => void;
 }
