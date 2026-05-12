@@ -24,7 +24,19 @@ function getEngine(io: IO, room: Room): GameEngine {
 }
 
 export function registerSocketHandlers(io: IO, socket: IOSocket) {
-  // 玩家身份握手
+  // 握手时携带的身份信息：连接建立即填充 socket.data，避免业务事件早于 player:hello
+  const auth = socket.handshake.auth as {
+    playerId?: string;
+    name?: string;
+    avatar?: string;
+  };
+  if (auth?.playerId && auth.name && auth.avatar) {
+    socket.data.playerId = auth.playerId;
+    socket.data.name = auth.name;
+    socket.data.avatar = auth.avatar;
+  }
+
+  // 玩家身份握手（兼容首次设置昵称后的二次同步）
   socket.on('player:hello', ({ playerId, name, avatar }) => {
     socket.data.playerId = playerId;
     socket.data.name = name;

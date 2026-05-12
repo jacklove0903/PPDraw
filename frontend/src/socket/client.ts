@@ -19,6 +19,12 @@ export function getSocket(): Socket<ServerToClientEvents, ClientToServerEvents> 
     socket = io(URL, {
       autoConnect: false,
       transports: ['websocket'],
+      // 通过握手 auth 传递身份，保证服务端在收到任何业务事件前已知道玩家
+      // 这样刷新后 room:join 不会先于 player:hello 到达
+      auth: (cb) => {
+        const { playerId, name, avatar } = useUserStore.getState();
+        cb({ playerId, name, avatar });
+      },
     });
 
     socket.on('connect', () => {
